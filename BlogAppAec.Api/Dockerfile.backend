@@ -1,0 +1,20 @@
+# Stage 1: Build the application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+
+# Copy the solution file and other projects
+COPY BlogAppAec.sln .  
+COPY BlogAppAec.Application/ ./BlogAppAec.Application/  
+COPY BlogAppAec.Domain/ ./BlogAppAec.Domain/  
+COPY BlogAppAec.Infrastructure/ ./BlogAppAec.Infrastructure/  
+COPY BlogAppAec.Api/ ./BlogAppAec.Api/  
+
+# Restore and build the backend
+RUN dotnet restore BlogAppAec.Api/BlogAppAec.Api.csproj
+RUN dotnet publish BlogAppAec.Api/BlogAppAec.Api.csproj -c Release -o /app/publish
+
+# Stage 2: Create the runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "BlogAppAec.Api.dll"]
