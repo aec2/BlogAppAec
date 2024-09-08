@@ -25,7 +25,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/Projects/BlogAppAec  # Change to your project directory on EC2
-            git pull https://<${{ secrets.TOKEN }}>@github.com/your-username/your-repository.git
+            git pull https://<${{ secrets.TOKEN }}>@github.com/aec2/BlogAppAec.git
             docker-compose down       # Stop and remove the current containers
             docker-compose up -d --build  # Rebuild and restart the containers
             docker system prune -f    # Clean up unused images and containers
