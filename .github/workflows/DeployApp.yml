@@ -21,13 +21,16 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Add GitHub to known hosts
+        run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
       - name: Connect to EC2 and deploy
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/Projects/BlogAppAec  # Change to your project directory on EC2
-            git pull https://<${{ secrets.TOKEN }}>@github.com/aec2/BlogAppAec.git
-            docker-compose down       # Stop and remove the current containers
-            docker-compose up -d --build  # Rebuild and restart the containers
-            docker system prune -f    # Clean up unused images and containers
+            cd /home/ubuntu/Projects/BlogAppAec || exit 1
+            git fetch origin
+            git reset --hard origin/master
+            docker-compose down
+            docker-compose up -d --build
+            docker system prune -f
           EOF
-
