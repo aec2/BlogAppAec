@@ -28,9 +28,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/Projects/BlogAppAec || exit 1
-            git fetch origin
-            git reset --hard origin/master
+            git pull https://${{ secrets.TOKEN }}@github.com/aec2/BlogAppAec.git
             docker-compose down
             docker-compose up -d --build
             docker system prune -f
           EOF
+
