@@ -20,7 +20,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Copy the built app from the previous stage to the nginx directory
-COPY --from=build /app/dist/blog-app-aec-client/browser /usr/share/nginx/html
+COPY --from=build /app/dist/blog-app-aec-client /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
