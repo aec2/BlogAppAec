@@ -12,7 +12,7 @@ export class AppMenuComponent implements OnInit {
     ngOnInit() {
         this.model = [
             {
-                label: 'Dashboards',
+                label: 'TEST NAVIGATION',
                 icon: 'pi pi-home',
                 items: [
                     {
