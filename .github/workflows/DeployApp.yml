@@ -1,6 +1,5 @@
 name: Deploy to EC2
 
-# Trigger the workflow on push to the master branch or pull request targeting master
 on:
   push:
     branches:
@@ -14,39 +13,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository to the GitHub Actions runner
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Install SSH key for EC2 access
-      # Ensure the SSH private key is set as a GitHub secret named SSH_PRIVATE_KEY
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # Step 3: Add GitHub's public key to known_hosts to avoid host verification prompt
       - name: Add GitHub to known hosts
         run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-      # Step 4: Connect to EC2 and execute deployment commands
       - name: Connect to EC2 and deploy
         run: |
-          # This is where the SSH connection is made to your EC2 instance.
-          # If there is a connection issue, it could be related to security groups, SSH keys, or network issues.
-          ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Ensure we are in the correct directory
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd /home/ubuntu/Projects/BlogAppAec || exit 1
-
-            # Pull the latest code from the repository. Ensure the token is set correctly in GitHub secrets.
             git pull https://${{ secrets.TOKEN }}@github.com/aec2/BlogAppAec.git
-
-            # Stop and remove any running containers from the Docker Compose setup
             docker-compose down
-
-            # Build and run the Docker containers in detached mode
             docker-compose up -d --build
-
-            # Clean up unused Docker resources to free up space
             docker system prune -f
           EOF
+
